@@ -1,31 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import  { Calendar }  from  'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 
 import { NavBar, CalendarEvent, CalendarModal, FabAddNew, FabDelete } from '../';
 import { localizer, getMessagesES } from '../../helpers';
-import { useUiStore, useCalendarStore} from '../../hooks';
+import { useUiStore, useCalendarStore, useAuthStore} from '../../hooks';
 
 
 export const CalendarPage = () => {
 
+  const { user } = useAuthStore();
+
   const{ openDateModal } = useUiStore();
 
-  const { events, setActiveEvent, activeEvents } = useCalendarStore();
+  const { events, setActiveEvent, startLoadingEvents } = useCalendarStore();
 
     // eslint-disable-next-line no-unused-vars
     const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'week');
   
     // eslint-disable-next-line no-unused-vars
     const eventStyleGetter = ( event, start, end, isSelected ) =>{
-  
+      // console.log(isSelected);
+      //* Si el evento pertenece al usuario
+      const isMyEvent = ( user.uid === event.user._id ) || ( user.uid === event.user.uid);
+
       // console.log({event, start, end, isSelected });
   
       const style = {
-        backgroundColor: '#347cf7',
+        backgroundColor: isMyEvent ? '#347cf7' : '#465660',
         borderRadius: '0px',
-        opacity: 0.8,
+        opacity: isSelected ? 1 : 0.8,
         color:'white'
       };
   
@@ -44,15 +49,18 @@ export const CalendarPage = () => {
   };
 
 
-const onDoblueClick = (event) =>{
+const onDoblueClick = () =>{
   // console.log({doubleClick: event});
   openDateModal();
 };
 
 
 const onSelect = (event) =>{
+
   // console.log({click: event});
+
   setActiveEvent(event);
+
 };
 
 const onViewChange = (events) =>{
@@ -60,6 +68,12 @@ const onViewChange = (events) =>{
   localStorage.setItem('lastView', events);
 };
 
+
+//* Apenas se carge el componente se dispara el efecto, que es cargar las notas del usuario
+
+useEffect(() => {
+  startLoadingEvents();
+}, []);
 
   return (
     <>

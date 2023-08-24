@@ -11,8 +11,9 @@ export const AppRouter = () => {
     // const isAuthenticated = useMemo(() => status === 'authenticated', [status]);
 
     useEffect(() => {
+        
         checkAuthToken();    
-        console.log('xd');
+        
     }, []);
 
 

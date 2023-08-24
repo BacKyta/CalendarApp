@@ -1,4 +1,5 @@
 import { useCalendarStore, useUiStore } from '../../hooks';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 export const FabDelete = () => {
 
@@ -15,6 +16,7 @@ export const FabDelete = () => {
     <>
     { isDateModalOpen === false && (
           <button
+          data-testid='btn-delete'
           className="btn btn-danger fab-danger"
           onClick={ handleDelete }
           style={{display: hasEventSelected ? '' : 'none' }}

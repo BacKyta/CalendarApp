@@ -1,42 +1,42 @@
 
 import { createSlice } from '@reduxjs/toolkit';
-import { addHours } from 'date-fns';
 
 
-const tempEvent = {
-    _id: new Date().getTime(),
-    title  : 'Cumple de kevin',
-    notes  : 'Hay que comprar torta',
-    start  : new Date(),
-    end    : addHours( new Date(), 2),
-    bgColor: '#fafafa',
-    user   : {
-    _id: '123',
-    name: 'Kevin'
-    }
-};
+// const tempEvent = {
+//     _id: new Date().getTime(),
+//     title  : 'Cumple de kevin',
+//     notes  : 'Hay que comprar torta',
+//     start  : new Date(),
+//     end    : addHours( new Date(), 2),
+//     bgColor: '#fafafa',
+//     user   : {
+//     _id: '123',
+//     name: 'Kevin'
+//     }
+// };
 
 
 export const calendarSlice = createSlice({
   name: 'calendar',
   initialState:{
+    isLoadingEvents: true,
     events: [ 
-        tempEvent 
+        // tempEvent 
     ],
-    activeEvents: null,
+    activeEvent: null,
   },
   reducers: {
     onSetActiveEvent: ( state, {payload}) =>{
-        state.activeEvents = payload;
+        state.activeEvent = payload;
     },
     onAddNewEvent: ( state, { payload } ) =>{
       state.events.push( payload );
-      state.activeEvents = null;
+      state.activeEvent = null;
     },
     onUpdateEvent: ( state, {payload}) =>{
       state.events = state.events.map( event => {
 
-        if ( event._id === payload._id) {
+        if ( event.id === payload.id) {
           return payload;
         }
 
@@ -44,14 +44,46 @@ export const calendarSlice = createSlice({
       });
     },
     onDeleteEvent: ( state ) =>{
-      if (state.activeEvents) {
-        state.events = state.events.filter( event => event._id !== state.activeEvents._id);
-        state.activeEvents = null;
+      if (state.activeEvent) {
+        state.events = state.events.filter( event => event.id !== state.activeEvent.id);
+        state.activeEvent = null;
       }
      
+    },
+    //* establecer eventos que vienen del backend
+    onLoadEvents: (state, { payload = [] }) =>{
+
+      state.isLoadingEvents = false;
+      // state.events = payload;
+      
+      //* Compara los eventos locales del estado actual con los que se manda del payload que son
+      //* lo que se llaman de la bd y los setea si no son los mismos.
+
+      payload.forEach( event => {
+
+          const exists = state.events.some( dbEvent => dbEvent.id === event.id );
+
+          if (!exists) {
+            state.events.push( event );
+          }
+      });
+
+    },
+    onLogoutCalendar: ( state ) =>{
+      state.isLoadingEvents =  true,
+      state.events = [],
+      state.activeEvent = null;
     }
+    
   }
 });
 
-export const { onSetActiveEvent,onAddNewEvent, onUpdateEvent, onDeleteEvent } = calendarSlice.actions;
+export const { 
+onSetActiveEvent, 
+onAddNewEvent, 
+onUpdateEvent, 
+onDeleteEvent, 
+onLoadEvents, 
+disablesactiveEvent,
+onLogoutCalendar} = calendarSlice.actions;
 

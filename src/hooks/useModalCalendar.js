@@ -1,5 +1,5 @@
+// import 'sweetalert2/dist/sweetalert2.min.css';
 import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
 
 import { addHours, differenceInSeconds } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
@@ -11,7 +11,7 @@ export const useModalCalendar = () => {
 
     const { isDateModalOpen, closeDateModal } = useUiStore();
 
-    const { activeEvents, startSavingEvent } = useCalendarStore();
+    const { activeEvent, startSavingEvent } = useCalendarStore();
 
     const [formSubmitted, setFormSubmitted] = useState(false);
   
@@ -38,13 +38,13 @@ export const useModalCalendar = () => {
 
     useEffect(() => {
       
-      if (activeEvents !== null) {
+      if (activeEvent !== null) {
         setFormValue({
-          ...activeEvents
+          ...activeEvent
         });
       }
 
-    }, [activeEvents]);
+    }, [activeEvent]);
 
     //* Manejadores
   
@@ -80,7 +80,7 @@ export const useModalCalendar = () => {
       const difference = differenceInSeconds( formValues.end, formValues.start ); 
   
       if ( isNaN( difference )  || difference <= 0) {
-        Swal.fire('Fechas incorrectas', 'Revisar las fechas ingresadas', 'error');
+        Swal.fire('Fechas u horas incorrectas', 'Revisar las fechas y horas ingresadas', 'error');
         return;
       }
       if ( formValues.title.length <= 0) return;
@@ -113,4 +113,4 @@ export const useModalCalendar = () => {
 //* El formValues es lo que se setea cuando se agrega una nuesva actividad en el calendario, ya que antes
 //* de esto se seteo en el setActive, y este y esparcio ... en el setActive que es el estado del formulario
 //* del modal, y asi se puede setear, 
-//* Por eso tenemos el events, y el activeEvents que es el que se uso en el +
+//* Por eso tenemos el events, y el activeEvent que es el que se uso en el +

@@ -1,3 +1,5 @@
+//? Instancia de Axios Config
+
 import axios from 'axios';
 import { getEnvVariables } from '../helpers/getEnvVariables';
 
@@ -18,6 +20,7 @@ calendarApi.interceptors.request.use( config =>{
     };
 
     //retorna onfig modificada
+    // console.log(config);
     return config;
 });
 

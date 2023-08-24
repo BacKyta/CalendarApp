@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import calendarApi from '../api/calendarAPi';
-import { clearErrorMessage, onChecking, onLogin, onLogout, onRegister } from '../store';
+import { clearErrorMessage, onChecking, onLogin, onLogout, onLogoutCalendar, onRegister } from '../store';
 import Swal from 'sweetalert2';
 
 export const useAuthStore = () => {
@@ -16,7 +16,7 @@ export const useAuthStore = () => {
         try {
            
             const { data } = await calendarApi.post('/auth',{ email, password });
-            console.log({ data });
+            // console.log({ data });
             localStorage.setItem('token', data.token);
             localStorage.setItem('name', data.name);
             localStorage.setItem('uid', data.uid);
@@ -39,7 +39,7 @@ export const useAuthStore = () => {
 
         try {
             const { data } = await calendarApi.post('/auth/new',{ name, email, password });
-            console.log(data); // no existe la data porque retina error , manda al catch
+            // console.log(data); // no existe la data porque retina error , manda al catch
             localStorage.setItem('token', data.token);
             localStorage.setItem('token-init-date', new Date().getTime());
             dispatch( onRegister({ name: data.name, uid: data.uid}) );
@@ -48,13 +48,13 @@ export const useAuthStore = () => {
             }
 
         } catch (error) {
-            console.log(error);
+            // console.log(error);
           
             dispatch( onLogout( error.response.data?.msg || Object.values(error.response.data.errors)[0].msg));
             setTimeout(() => {
                 dispatch( clearErrorMessage());
             }, 10);
-            console.log(error);
+            // console.log(error);
           }
       
         };
@@ -66,24 +66,22 @@ export const useAuthStore = () => {
     const checkAuthToken = async() =>{
 
         const token = localStorage.getItem('token');
-        // const name = localStorage.getItem('name');
-        // const uid = localStorage.getItem('uid');
-      
-
-        console.log('me dispare');
+        const name = localStorage.getItem('name');
+        const uid = localStorage.getItem('uid');
+    
         if ( !token ) return dispatch( onLogout() );
         
         try {
-            console.log('me dispare');
-            // if (token) {
 
-            //     localStorage.setItem('token', token);
-            //     localStorage.setItem('token-init-date', new Date().getTime());
-            //     dispatch( onLogin({ name: name, uid: uid }) );
+            if (token) {
 
-            // }else{
+                localStorage.setItem('token', token);
+                localStorage.setItem('token-init-date', new Date().getTime());
+                dispatch( onLogin({ name: name, uid: uid }) );
+
+            }else{
                 
-                const { data } = calendarApi.get('auth/renew');
+                const { data } = calendarApi.get('/auth/renew'); //aqui es el error revisar
                 console.log({ data });
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('name', data.name);
@@ -91,13 +89,13 @@ export const useAuthStore = () => {
                 localStorage.setItem('token-init-date', new Date().getTime());
                 dispatch( onLogin({ name: data.name, uid: data.uid }) );
 
-            // }
+            }
 
 
 
         } catch (error) {
-            console.log('me dispare');
-            console.log(error);
+      
+            // console.log(error);
             localStorage.clear();
             dispatch( onLogout() );
         }
@@ -109,6 +107,7 @@ export const useAuthStore = () => {
         
         localStorage.clear();
         dispatch( onLogout() );
+        dispatch( onLogoutCalendar() );
 
     };
 

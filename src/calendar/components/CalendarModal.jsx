@@ -6,6 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import es from 'date-fns/locale/es';
 import { useModalCalendar } from '../../hooks/useModalCalendar';
+import { getEnvVariables } from '../../helpers';
 
 
 registerLocale('es', es);
@@ -21,7 +22,9 @@ const customStyles = {
   },
 };
 
-Modal.setAppElement('#root'); //* donde se colocara el modal, osea en root html
+if (getEnvVariables().VITE_MODE !== 'test') {
+  Modal.setAppElement('#root'); //* donde se colocara el modal, osea en root html
+}
 
 export const CalendarModal = () => {
 
